@@ -5,22 +5,33 @@ import matplotlib.pyplot as plt
 # Set page config and style
 st.set_page_config(page_title="Gauss-Jordan Calculator", layout="wide")
 
-# Custom CSS for white background and styling
+# Custom CSS to ensure black text
 st.markdown("""
     <style>
-        .stApp {
-            background-color: white;
+        /* Override Streamlit's default text colors */
+        .stApp, .stMarkdown, div[data-testid="stText"] {
+            color: black !important;
         }
-        .stButton>button {
-            width: 100%;
+        /* Make all headers black */
+        h1, h2, h3, h4, h5, h6 {
+            color: black !important;
         }
-        .plot-container>div {
-            background-color: white !important;
+        /* Make input labels black */
+        .stNumberInput label {
+            color: black !important;
+        }
+        /* Make all paragraphs and text black */
+        p, span, div {
+            color: black !important;
+        }
+        /* Style for messages */
+        .stSuccess, .stWarning, .stInfo, .stError {
+            color: black !important;
         }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Gauss-Jordan Elimination Calculator")
+st.markdown('<h1 style="color: black;">Gauss-Jordan Elimination Calculator</h1>', unsafe_allow_html=True)
 
 def gauss_jordan_elimination(matrix, vector):
     try:
@@ -67,10 +78,16 @@ def plot_system(matrix, vector, solution=None):
     ax.grid(True, linestyle='--', alpha=0.7)
     ax.axhline(y=0, color='k', linestyle='-', alpha=0.3)
     ax.axvline(x=0, color='k', linestyle='-', alpha=0.3)
-    ax.set_xlabel('x', fontsize=12)
-    ax.set_ylabel('y', fontsize=12)
-    ax.legend(fontsize=10)
-    ax.set_title('System of Linear Equations Visualization', pad=20, fontsize=14)
+    ax.set_xlabel('x', fontsize=12, color='black')
+    ax.set_ylabel('y', fontsize=12, color='black')
+    ax.set_title('System of Linear Equations', fontsize=14, color='black')
+    
+    # Make tick labels black
+    ax.tick_params(axis='both', colors='black')
+    
+    # Make legend text black
+    legend = ax.legend(fontsize=10)
+    plt.setp(legend.get_texts(), color='black')
     
     # Set reasonable axis limits
     ax.set_xlim(-10, 10)
@@ -86,10 +103,11 @@ left_col, right_col = st.columns([1, 1])
 
 with left_col:
     # User input for matrix size
+    st.markdown('<h3 style="color: black;">Matrix Size:</h3>', unsafe_allow_html=True)
     size = st.number_input("Enter the size of the matrix (2 or 3):", min_value=2, max_value=3, value=2)
 
     # Create input fields for matrix
-    st.subheader("Enter Matrix Coefficients:")
+    st.markdown('<h3 style="color: black;">Matrix Coefficients:</h3>', unsafe_allow_html=True)
     matrix = []
     for i in range(size):
         row = []
@@ -100,7 +118,7 @@ with left_col:
         matrix.append(row)
 
     # Create input fields for vector
-    st.subheader("Enter Constants:")
+    st.markdown('<h3 style="color: black;">Constants:</h3>', unsafe_allow_html=True)
     vector = []
     cols = st.columns(size)
     for i in range(size):
@@ -110,7 +128,7 @@ with left_col:
     vector_np = np.array(vector, dtype=float)
 
 with right_col:
-    st.subheader("System Visualization and Solution")
+    st.markdown('<h3 style="color: black;">System Visualization and Solution</h3>', unsafe_allow_html=True)
     
     # Try to solve and update visualization in real-time
     solution, success = gauss_jordan_elimination(matrix_np.copy(), vector_np.copy())
@@ -120,16 +138,16 @@ with right_col:
         st.pyplot(fig)
         
         if success:
-            st.success("Solution:")
+            st.markdown('<div style="background-color: #e8f5e9; padding: 10px; border-radius: 5px; color: black;">Solution:</div>', unsafe_allow_html=True)
             for i, val in enumerate(solution):
-                st.write(f"x{i+1} = {val:.4f}")
+                st.markdown(f'<div style="color: black;">x{i+1} = {val:.4f}</div>', unsafe_allow_html=True)
         else:
-            st.warning("The system may not have a unique solution. Try adjusting the coefficients.")
+            st.markdown('<div style="background-color: #ffebee; padding: 10px; border-radius: 5px; color: black;">The system may not have a unique solution. Try adjusting the coefficients.</div>', unsafe_allow_html=True)
     else:
-        st.info("3D visualization is not supported. Solution will be shown below.")
+        st.markdown('<div style="background-color: #e3f2fd; padding: 10px; border-radius: 5px; color: black;">3D visualization is not supported. Solution will be shown below.</div>', unsafe_allow_html=True)
         if success:
-            st.success("Solution:")
+            st.markdown('<div style="background-color: #e8f5e9; padding: 10px; border-radius: 5px; color: black;">Solution:</div>', unsafe_allow_html=True)
             for i, val in enumerate(solution):
-                st.write(f"x{i+1} = {val:.4f}")
+                st.markdown(f'<div style="color: black;">x{i+1} = {val:.4f}</div>', unsafe_allow_html=True)
         else:
-            st.warning("The system may not have a unique solution. Try adjusting the coefficients.")
+            st.markdown('<div style="background-color: #ffebee; padding: 10px; border-radius: 5px; color: black;">The system may not have a unique solution. Try adjusting the coefficients.</div>', unsafe_allow_html=True)
