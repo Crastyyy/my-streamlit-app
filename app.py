@@ -1,153 +1,199 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import List, Tuple
+import sympy as sp
 
-# Set page config and style
+# Configure the page
 st.set_page_config(page_title="Gauss-Jordan Calculator", layout="wide")
 
-# Custom CSS to ensure black text
+# Custom styling
 st.markdown("""
     <style>
-        /* Override Streamlit's default text colors */
-        .stApp, .stMarkdown, div[data-testid="stText"] {
+        [data-testid="stAppViewContainer"], 
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"],
+        [data-testid="stSidebar"] {
+            background-color: white;
+        }
+        
+        .step-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+        }
+        
+        .matrix-display {
+            font-family: 'Computer Modern', serif;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .solution-header {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        /* Target all Streamlit text elements */
+        .st-emotion-cache-1y4p8pa,
+        .st-emotion-cache-183lzff,
+        .st-emotion-cache-1inwz65,
+        .st-emotion-cache-10trblm,
+        .st-emotion-cache-1gulkj5,
+        .st-emotion-cache-1n76uvr {
             color: black !important;
         }
-        /* Make all headers black */
-        h1, h2, h3, h4, h5, h6 {
-            color: black !important;
+        
+        /* Style buttons */
+        .stButton > button {
+            color: white !important;
+            background-color: black !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            border-radius: 4px !important;
+            transition: all 0.3s ease !important;
         }
-        /* Make input labels black */
-        .stNumberInput label {
-            color: black !important;
-        }
-        /* Make all paragraphs and text black */
-        p, span, div {
-            color: black !important;
-        }
-        /* Style for messages */
-        .stSuccess, .stWarning, .stInfo, .stError {
-            color: black !important;
+        
+        .stButton > button:hover {
+            background-color: #333 !important;
+            transform: translateY(-1px);
         }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<h1 style="color: black;">Gauss-Jordan Elimination Calculator</h1>', unsafe_allow_html=True)
+def format_matrix(matrix: np.ndarray) -> str:
+    """Convert matrix to LaTeX string."""
+    matrix = np.round(matrix, decimals=4)
+    rows = matrix.shape[0]
+    cols = matrix.shape[1]
+    latex = "\\begin{bmatrix} "
+    for i in range(rows):
+        for j in range(cols):
+            if j == cols - 1:
+                latex += f"{matrix[i,j]:.2f}"
+            else:
+                latex += f"{matrix[i,j]:.2f} & "
+        if i != rows - 1:
+            latex += " \\\\ "
+    latex += " \\end{bmatrix}"
+    return latex
 
-def gauss_jordan_elimination(matrix, vector):
+def gauss_jordan_elimination_steps(matrix: np.ndarray, vector: np.ndarray) -> List[Tuple[np.ndarray, str]]:
+    """Perform Gauss-Jordan elimination with steps."""
+    augmented = np.hstack((matrix, vector.reshape(-1, 1)))
+    n = len(matrix)
+    steps = []
+    
+    # Store initial matrix
+    steps.append((augmented.copy(), "Initial augmented matrix"))
+    
     try:
-        # Combine matrix with vector
-        augmented = np.hstack((matrix, vector.reshape(-1, 1)))
-        n = len(matrix)
-        
-        # Perform Gauss-Jordan elimination
         for i in range(n):
             # Make the diagonal element 1
             pivot = augmented[i][i]
-            if pivot == 0:
+            if abs(pivot) < 1e-10:
                 raise np.linalg.LinAlgError("Zero pivot encountered")
-            augmented[i] = augmented[i] / pivot
+            
+            if pivot != 1:
+                augmented[i] = augmented[i] / pivot
+                steps.append((augmented.copy(), f"R_{i+1} = R_{i+1} ÷ {pivot:.2f}"))
             
             # Make other elements in column i equal to 0
             for j in range(n):
                 if i != j:
-                    augmented[j] = augmented[j] - augmented[i] * augmented[j][i]
+                    factor = augmented[j][i]
+                    if abs(factor) > 1e-10:
+                        augmented[j] = augmented[j] - factor * augmented[i]
+                        steps.append((augmented.copy(), 
+                            f"R_{j+1} = R_{j+1} - {factor:.2f}R_{i+1}"))
         
-        return augmented[:, -1], True
+        return steps, True
     except Exception as e:
-        return None, False
+        return steps, False
 
-def plot_system(matrix, vector, solution=None):
-    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
-    
-    # Create points for plotting
-    x = np.linspace(-10, 10, 1000)
-    
-    # Plot each equation
-    colors = ['#2ecc71', '#e74c3c', '#3498db']  # Green, Red, Blue
-    for i in range(len(matrix)):
-        if matrix[i][1] != 0:  # Avoid division by zero
-            y = (-matrix[i][0] * x - vector[i]) / matrix[i][1]
-            ax.plot(x, y, label=f'Equation {i+1}', color=colors[i], linewidth=2)
-    
-    # Plot solution point if available
-    if solution is not None and len(matrix) >= 2:
-        ax.plot(solution[0], solution[1], 'ko', label='Solution', markersize=10)
-        ax.plot(solution[0], solution[1], 'wo', markersize=6)
-    
-    # Styling
-    ax.grid(True, linestyle='--', alpha=0.7)
-    ax.axhline(y=0, color='k', linestyle='-', alpha=0.3)
-    ax.axvline(x=0, color='k', linestyle='-', alpha=0.3)
-    ax.set_xlabel('x', fontsize=12, color='black')
-    ax.set_ylabel('y', fontsize=12, color='black')
-    ax.set_title('System of Linear Equations', fontsize=14, color='black')
-    
-    # Make tick labels black
-    ax.tick_params(axis='both', colors='black')
-    
-    # Make legend text black
-    legend = ax.legend(fontsize=10)
-    plt.setp(legend.get_texts(), color='black')
-    
-    # Set reasonable axis limits
-    ax.set_xlim(-10, 10)
-    ax.set_ylim(-10, 10)
-    
-    # Make plot background white
-    ax.set_facecolor('white')
-    
-    return fig
+st.title("Gauss-Jordan Elimination Calculator")
+st.markdown("---")
 
-# Create two columns for input and visualization
+# Create two columns for input
 left_col, right_col = st.columns([1, 1])
 
 with left_col:
-    # User input for matrix size
-    st.markdown('<h3 style="color: black;">Matrix Size:</h3>', unsafe_allow_html=True)
-    size = st.number_input("Enter the size of the matrix (2 or 3):", min_value=2, max_value=3, value=2)
-
-    # Create input fields for matrix
-    st.markdown('<h3 style="color: black;">Matrix Coefficients:</h3>', unsafe_allow_html=True)
+    st.markdown("### Matrix Input")
+    size = st.selectbox("Matrix Size", [2, 3], index=0)
+    
+    st.markdown("#### Enter Matrix Coefficients")
     matrix = []
     for i in range(size):
         row = []
         cols = st.columns(size)
         for j in range(size):
-            row.append(cols[j].number_input(f"Matrix[{i}][{j}]", value=1.0 if i == j else 0.0, 
-                                          key=f"matrix_{i}_{j}", step=0.1))
+            row.append(cols[j].number_input(
+                f"a_{i+1}{j+1}",
+                value=1.0 if i == j else 0.0,
+                key=f"matrix_{i}_{j}",
+                format="%.2f"
+            ))
         matrix.append(row)
-
-    # Create input fields for vector
-    st.markdown('<h3 style="color: black;">Constants:</h3>', unsafe_allow_html=True)
+    
+    st.markdown("#### Enter Constants")
     vector = []
     cols = st.columns(size)
     for i in range(size):
-        vector.append(cols[i].number_input(f"b[{i}]", value=1.0, key=f"vector_{i}", step=0.1))
+        vector.append(cols[i].number_input(
+            f"b_{i+1}",
+            value=1.0,
+            key=f"vector_{i}",
+            format="%.2f"
+        ))
 
-    matrix_np = np.array(matrix, dtype=float)
-    vector_np = np.array(vector, dtype=float)
+    solve_button = st.button("Solve System")
 
 with right_col:
-    st.markdown('<h3 style="color: black;">System Visualization and Solution</h3>', unsafe_allow_html=True)
-    
-    # Try to solve and update visualization in real-time
-    solution, success = gauss_jordan_elimination(matrix_np.copy(), vector_np.copy())
-    
-    if size == 2:  # Only show graph for 2x2 systems
-        fig = plot_system(matrix_np, vector_np, solution if success else None)
-        st.pyplot(fig)
+    if solve_button:
+        st.markdown("### Solution Steps")
+        matrix_np = np.array(matrix, dtype=float)
+        vector_np = np.array(vector, dtype=float)
+        
+        steps, success = gauss_jordan_elimination_steps(matrix_np, vector_np)
         
         if success:
-            st.markdown('<div style="background-color: #e8f5e9; padding: 10px; border-radius: 5px; color: black;">Solution:</div>', unsafe_allow_html=True)
+            for idx, (step_matrix, description) in enumerate(steps):
+                with st.container():
+                    st.markdown(f"""
+                    <div class="step-container">
+                        <div class="solution-header">Step {idx + 1}: {description}</div>
+                        <div class="matrix-display">
+                            ${format_matrix(step_matrix)}$
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            
+            # Display final solution
+            solution = steps[-1][0][:, -1]
+            st.markdown("### Final Solution")
             for i, val in enumerate(solution):
-                st.markdown(f'<div style="color: black;">x{i+1} = {val:.4f}</div>', unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style="font-size: 1.2em; margin: 10px 0;">
+                    x<sub>{i+1}</sub> = {val:.4f}
+                </div>
+                """, unsafe_allow_html=True)
         else:
-            st.markdown('<div style="background-color: #ffebee; padding: 10px; border-radius: 5px; color: black;">The system may not have a unique solution. Try adjusting the coefficients.</div>', unsafe_allow_html=True)
-    else:
-        st.markdown('<div style="background-color: #e3f2fd; padding: 10px; border-radius: 5px; color: black;">3D visualization is not supported. Solution will be shown below.</div>', unsafe_allow_html=True)
-        if success:
-            st.markdown('<div style="background-color: #e8f5e9; padding: 10px; border-radius: 5px; color: black;">Solution:</div>', unsafe_allow_html=True)
-            for i, val in enumerate(solution):
-                st.markdown(f'<div style="color: black;">x{i+1} = {val:.4f}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div style="background-color: #ffebee; padding: 10px; border-radius: 5px; color: black;">The system may not have a unique solution. Try adjusting the coefficients.</div>', unsafe_allow_html=True)
+            st.error("The system may not have a unique solution. Please check your input matrix.")
+
+st.markdown("---")
+st.markdown("""
+### How to Use:
+1. Select the matrix size (2×2 or 3×3)
+2. Enter the coefficients of your system of equations
+3. Enter the constants (right-hand side values)
+4. Click "Solve System" to see the step-by-step solution
+""")
