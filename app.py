@@ -36,7 +36,7 @@ st.markdown("""
         }
         
         .solution-header {
-            background-color: #e3f2fd;
+            background-color:rgb(0, 0, 0);
             padding: 10px;
             border-radius: 5px;
             margin: 10px 0;
