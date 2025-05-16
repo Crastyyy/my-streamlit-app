@@ -16,8 +16,8 @@ st.markdown("""
     }
     
     .center-title {
-        text-align: center;
-        font-size: 28px !important;
+        text-align: side;
+        font-size: 70px !important;
         margin-bottom: 15px;
     }
     
@@ -30,6 +30,18 @@ st.markdown("""
         gap: 20px;
         padding: 10px;
         background-color: transparent;
+        align-items: center;
+    }
+    
+    /* Parameter labels */
+    .param-label {
+        font-family: 'Roboto', sans-serif;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.9);
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: 500;
+        width: 100%;
     }
     
     /* All parameter controls (sliders and select) */
@@ -48,24 +60,10 @@ st.markdown("""
         width: 500px !important;
     }
     
-    /* Slider labels */
+    /* Hide default labels */
     .parameters-container [data-testid="stSlider"] > div:first-child,
     .parameters-container div[data-testid="stSelectSlider"] label {
-        text-align: center !important;
-        margin-bottom: 5px !important;
-        font-family: 'Roboto', sans-serif !important;
-        font-size: 14px !important;
-        color: rgba(255, 255, 255, 0.9) !important;
-        width: 100% !important;
-    }
-    
-    /* Thumb values */
-    .parameters-container [data-testid="stThumbValue"] {
-        background-color: transparent !important;
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-size: 12px !important;
-        padding: 2px 4px !important;
-        font-family: 'Roboto', sans-serif;
+        display: none !important;
     }
     
     /* Matrix input styling */
@@ -127,31 +125,36 @@ st.markdown("""
 
 # Application title and description
 st.markdown('<h1 class="center-title">Gauss-Jordan Calculator</h1>', unsafe_allow_html=True)
-st.markdown('<p class="math-symbol">Solve system of equations Ax = b using Gauss-Jordan elimination</p>', unsafe_allow_html=True)
+st.markdown('This is a tool that automatically solves systems of linear equations of the form Ax = b using the Gauss-Jordan elimination method. Simply choose your matrix size, set tolerance and maximum iterations if needed, and the calculator will transform your matrix into reduced row echelon form (RREF) to find the solution quickly and accurately, with no manual steps required.', unsafe_allow_html=True)
 
 # Input parameters section - all in one column
 st.markdown('<div class="parameters-container">', unsafe_allow_html=True)
 
 # Matrix size with custom label
-size = st.select_slider("Matrix Size", options=[2, 3, 4], value=2)
+st.markdown('<div class="param-label">Matrix Size</div>', unsafe_allow_html=True)
+size = st.select_slider("", options=[2, 3, 4], value=2, label_visibility="collapsed")
 
 # Tolerance with custom label - using logarithmic scale
+st.markdown('<div class="param-label">Tolerance (ε)</div>', unsafe_allow_html=True)
 tolerance_exp = st.slider(
-    "Tolerance (ε)",
+    "",
     min_value=-15,
     max_value=-1,
     value=-10,
-    step=1
+    step=1,
+    label_visibility="collapsed"
 )
 tolerance = 10.0 ** tolerance_exp
 
 # Maximum iterations with custom label
+st.markdown('<div class="param-label">Maximum Iterations</div>', unsafe_allow_html=True)
 max_iterations = st.slider(
-    "Maximum Iterations",
+    "",
     min_value=10,
     max_value=100,
     value=50,
-    step=5
+    step=5,
+    label_visibility="collapsed"
 )
 
 st.markdown('</div>', unsafe_allow_html=True)
@@ -361,22 +364,3 @@ if st.button("Solve System", type="primary"):
                 'ε': [f"{e:.2e}" for e in error_history]
             })
             st.dataframe(iterations_df, hide_index=True)
-
-# Instructions
-with st.expander("How to use"):
-    st.write("""
-    1. Select the size of your system using the slider
-    2. Enter your coefficients in the matrix:
-        - Left side: coefficient matrix A
-        - Right side (after |): constants vector b
-    3. Click 'Solve System' to get your solution
-    4. The calculator will show:
-        - The solution for each variable
-        - The final augmented matrix
-        - Verification that the left side is an identity matrix
-        
-    Note: The Gauss-Jordan method performs complete elimination:
-    - Each pivot element becomes 1
-    - Each column has zeros in ALL other positions
-    - The final left side matrix is the identity matrix
-    """)
