@@ -70,7 +70,7 @@ st.markdown("""
     .matrix-input {
         position: relative;
         max-width: 600px;
-        margin: 15px auto;
+        margin: 40px 0px;
         padding: 10px;
         background-color: transparent;
     }
@@ -120,6 +120,77 @@ st.markdown("""
     .matrix-separator {
         width: 4px;
     }
+    
+    /* Matrix element container */
+    .matrix-element {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80px !important;
+        min-width: 80px !important;
+        max-width: 80px !important;
+    }
+    
+    /* Matrix element sliders */
+    .matrix-element .stSlider {
+        width: 80px !important;
+        min-width: 80px !important;
+        margin: 0 !important;
+    }
+    
+    /* Matrix element number inputs */
+    .matrix-element .stNumberInput {
+        width: 80px !important;
+    }
+    
+    .matrix-element .stNumberInput input {
+        width: 80px !important;
+        text-align: center;
+        padding: 0 4px !important;
+        background: transparent !important;
+        border: none !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-family: 'Roboto', sans-serif;
+        font-size: 12px !important;
+    }
+    
+    /* Hide slider thumb value */
+    .matrix-element [data-testid="stThumbValue"] {
+        display: none !important;
+    }
+    
+    /* Matrix row styling */
+    .matrix-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 15px 0;
+    }
+    
+    /* Matrix container */
+    .matrix-container {
+        margin: 0 auto;
+        padding: 10px 0;
+    }
+    
+    /* Matrix labels */
+    .matrix-labels {
+        display: flex;
+        justify-content: center;
+        gap: 350px;
+        margin-bottom: 10px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .matrix-a-label, .vector-b-label {
+        font-weight: 500;
+    }
+    
+    /* Variable labels */
+    
 </style>
 """, unsafe_allow_html=True)
 
@@ -163,28 +234,62 @@ st.markdown('</div>', unsafe_allow_html=True)
 st.markdown('<div class="matrix-input">', unsafe_allow_html=True)
 st.markdown('<div class="matrix-container">', unsafe_allow_html=True)
 
+# Initialize session state for matrix values
+if 'matrix_values' not in st.session_state:
+    st.session_state.matrix_values = {}
+
 # Create the augmented matrix input [A|b]
 matrix_input = []
 for i in range(size):
     st.markdown(f'<div class="matrix-row">', unsafe_allow_html=True)
     row = []
     
-    # Create columns for matrix A and vector b
-    cols = st.columns(size + 2)  # +2 for separator and b vector
+    # Create columns with specific widths
+    column_widths = [1] * size + [0.2] + [1]
+    cols = st.columns(column_widths)
     
     # Input fields for matrix A
     for j in range(size):
         with cols[j]:
-            val = st.slider(
+            st.markdown('<div class="matrix-element">', unsafe_allow_html=True)
+                        # Variable labels removed
+            
+            # Initialize value if not exists
+            key = f"{i}{j}"
+            if key not in st.session_state:
+                st.session_state[key] = 1.0 if i==j else 0.0
+            
+            # Number input for precise value
+            number_val = st.number_input(
                 "",
                 min_value=-10.0,
                 max_value=10.0,
-                value=1.0 if i==j else 0.0,  # Initialize as identity matrix
-                step=0.1,
-                key=f"a{i}{j}",
+                value=st.session_state[key],
+                step=0.01,
+                format="%.2f",
+                key=f"number_{key}",
                 label_visibility="collapsed"
             )
-            row.append(val)
+            
+            if number_val != st.session_state[key]:
+                st.session_state[key] = number_val
+            
+            # Slider for value
+            slider_val = st.slider(
+                "",
+                min_value=-10.0,
+                max_value=10.0,
+                value=st.session_state[key],
+                step=0.01,
+                key=f"slider_{key}",
+                label_visibility="collapsed"
+            )
+            
+            if slider_val != st.session_state[key]:
+                st.session_state[key] = slider_val
+            
+            row.append(st.session_state[key])
+            st.markdown('</div>', unsafe_allow_html=True)
     
     # Add separator between A and b
     with cols[size]:
@@ -192,16 +297,45 @@ for i in range(size):
     
     # Input field for vector b
     with cols[size + 1]:
-        val = st.slider(
+        st.markdown('<div class="matrix-element">', unsafe_allow_html=True)
+        # Removed b label
+        
+        # Initialize value if not exists
+        key = f"b{i}"
+        if key not in st.session_state:
+            st.session_state[key] = 0.0
+        
+        # Number input for precise value
+        number_val = st.number_input(
             "",
             min_value=-10.0,
             max_value=10.0,
-            value=0.0,
-            step=0.1,
-            key=f"b{i}",
+            value=st.session_state[key],
+            step=0.01,
+            format="%.2f",
+            key=f"number_{key}",
             label_visibility="collapsed"
         )
-        row.append(val)
+        
+        if number_val != st.session_state[key]:
+            st.session_state[key] = number_val
+        
+        # Slider for value
+        slider_val = st.slider(
+            "",
+            min_value=-10.0,
+            max_value=10.0,
+            value=st.session_state[key],
+            step=0.01,
+            key=f"slider_{key}",
+            label_visibility="collapsed"
+        )
+        
+        if slider_val != st.session_state[key]:
+            st.session_state[key] = slider_val
+        
+        row.append(st.session_state[key])
+        st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
     matrix_input.append(row)
@@ -239,7 +373,7 @@ def format_solution(var_idx, value):
     Returns:
         str: HTML formatted solution string
     """
-    return f"x<sub>{var_idx + 1}</sub> = {format_number(value)}"
+    return f"{chr(97 + var_idx)}1 = {format_number(value)}"
 
 def gauss_jordan_elimination(matrix, tolerance, max_iterations):
     """
@@ -322,45 +456,80 @@ if st.button("Solve System", type="primary"):
     st.markdown(f"<p class='math-symbol'>{message}</p>", unsafe_allow_html=True)
     
     if result is not None:
-        # Display solution and final matrix
-        col1, col2 = st.columns(2)
+        # Solution found message (large)
+        st.markdown("<div style='text-align: center; font-size: 70px; color: rgba(255, 255, 255, 0.9); margin: 40px 0; font-family: Roboto, sans-serif; font-weight: 300;'>Solution found</div>", unsafe_allow_html=True)
         
-        with col1:
-            st.markdown("#### Solution:")
-            solution_html = "<div class='math-symbol'>"
-            for i in range(size):
-                solution_html += format_solution(i, result[i,-1]) + "<br>"
-            solution_html += "</div>"
-            st.markdown(solution_html, unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center; font-family: Roboto, sans-serif; max-width: 800px; margin: 0 auto;'>", unsafe_allow_html=True)
         
-        with col2:
-            st.markdown("#### Final Matrix:")
-            st.write(result)
+        # Original Matrix Section
+        st.markdown("<div style='margin: 40px 0;'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-weight: 500; font-family: Roboto, sans-serif;'>Original Augmented Matrix</div>", unsafe_allow_html=True)
         
-        # Display convergence plot
-        if error_history:
-            st.markdown("#### Convergence")
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                y=error_history,
-                mode='lines+markers',
-                name='Error',
-                line=dict(color='#1f77b4')
-            ))
-            fig.update_layout(
-                title='Error vs Iteration',
-                xaxis_title='Iteration (n)',
-                yaxis_title='Error (ε)',
-                yaxis_type='log',
-                showlegend=False
-            )
-            st.plotly_chart(fig)
+        # Format original matrix
+        original_matrix_html = "<div style='font-family: Roboto Mono, monospace; font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5;'>"
+        original_matrix_html += "⎡"
+        for i in range(size):
+            if i > 0:
+                original_matrix_html += "⎢" if i < size - 1 else "⎣"
+            for j in range(size):
+                val = matrix_input[i][j]
+                original_matrix_html += f" {val:6.2f} "
+                if j == size - 1:
+                    original_matrix_html += "│"
+            original_matrix_html += f" {matrix_input[i][-1]:6.2f} "
+            if i == 0:
+                original_matrix_html += "⎤<br>"
+            elif i < size - 1:
+                original_matrix_html += "⎥<br>"
+            else:
+                original_matrix_html += "⎦"
+        original_matrix_html += "</div>"
+        st.markdown(original_matrix_html, unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # RREF Section
+        st.markdown("<div style='margin: 40px 0;'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-weight: 500; font-family: Roboto, sans-serif;'>Reduced Row Echelon Form (RREF)</div>", unsafe_allow_html=True)
         
-        # Display iteration details
-        if iteration_history:
-            st.markdown("#### Iteration Details")
-            iterations_df = pd.DataFrame({
-                'n': range(len(error_history)),
-                'ε': [f"{e:.2e}" for e in error_history]
-            })
-            st.dataframe(iterations_df, hide_index=True)
+        # Format RREF matrix
+        rref_matrix_html = "<div style='font-family: Roboto Mono, monospace; font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5;'>"
+        rref_matrix_html += "⎡"
+        for i in range(size):
+            if i > 0:
+                rref_matrix_html += "⎢" if i < size - 1 else "⎣"
+            for j in range(size):
+                val = result[i,j]
+                rref_matrix_html += f" {val:6.2f} "
+                if j == size - 1:
+                    rref_matrix_html += "│"
+            rref_matrix_html += f" {result[i,-1]:6.2f} "
+            if i == 0:
+                rref_matrix_html += "⎤<br>"
+            elif i < size - 1:
+                rref_matrix_html += "⎥<br>"
+            else:
+                rref_matrix_html += "⎦"
+        rref_matrix_html += "</div>"
+        st.markdown(rref_matrix_html, unsafe_allow_html=True)
+        
+        # Solution Type and Values
+        is_unique = all(abs(result[i,i] - 1.0) < 1e-10 for i in range(size))
+        has_solution = not any(all(abs(result[i,j]) < 1e-10 for j in range(size)) and abs(result[i,-1]) > 1e-10 for i in range(size))
+        
+        if has_solution:
+            if is_unique:
+                solution_type = "Unique Solution"
+                st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif;'>" + solution_type + "</div>", unsafe_allow_html=True)
+                
+                solution_html = "<div style='font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5; font-family: Roboto, sans-serif;'>"
+                for i in range(size):
+                    solution_html += f"x<sub>{i+1}</sub> = {result[i,-1]:.4f}<br>"
+                solution_html += "</div>"
+                st.markdown(solution_html, unsafe_allow_html=True)
+            else:
+                st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif;'>∞ Infinite Solutions</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif;'>✗ No Solution</div>", unsafe_allow_html=True)
+            
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
