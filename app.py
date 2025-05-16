@@ -23,7 +23,7 @@ st.markdown("""
     
     /* Parameters section */
     .parameters-container {
-        max-width: 250px;
+        max-width: 600px !important;
         margin: 10px auto;
         display: flex;
         flex-direction: column;
@@ -32,7 +32,43 @@ st.markdown("""
         background-color: transparent;
     }
     
-    /* Matrix input */
+    /* All parameter controls (sliders and select) */
+    .parameters-container > div {
+        width: 500px !important;
+        margin: 0 auto !important;
+    }
+    
+    /* Slider tracks */
+    .parameters-container [data-testid="stSlider"] > div > div > div {
+        width: 500px !important;
+    }
+    
+    /* Select slider */
+    .parameters-container div[data-testid="stSelectSlider"] {
+        width: 500px !important;
+    }
+    
+    /* Slider labels */
+    .parameters-container [data-testid="stSlider"] > div:first-child,
+    .parameters-container div[data-testid="stSelectSlider"] label {
+        text-align: center !important;
+        margin-bottom: 5px !important;
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 14px !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        width: 100% !important;
+    }
+    
+    /* Thumb values */
+    .parameters-container [data-testid="stThumbValue"] {
+        background-color: transparent !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 12px !important;
+        padding: 2px 4px !important;
+        font-family: 'Roboto', sans-serif;
+    }
+    
+    /* Matrix input styling */
     .matrix-input {
         position: relative;
         max-width: 600px;
@@ -55,7 +91,7 @@ st.markdown("""
         padding: 10px 0;
     }
     
-    /* Matrix input styling */
+    /* Matrix sliders */
     .matrix-row .stSlider {
         width: 80px !important;
         min-width: 80px !important;
@@ -66,7 +102,7 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Show value above slider */
+    /* Show value above matrix slider */
     .matrix-row .stSlider::before {
         content: attr(data-value);
         position: absolute;
@@ -82,100 +118,9 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Slider styling */
-    .stSlider {
-        width: 200px !important;
-        margin: 0 auto !important;
-    }
-    
-    .stSlider [data-testid="stThumbValue"] {
-        background-color: transparent !important;
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-size: 12px !important;
-        padding: 2px 4px !important;
-        font-family: 'Roboto', sans-serif;
-    }
-    
-    /* Style slider track */
-    .stSlider [data-testid="stSliderBar"] {
-        background-color: rgba(128, 128, 128, 0.5) !important;
-    }
-    
-    /* Number inputs */
-    .stNumberInput div[data-testid="stNumberInput"] {
-        background-color: transparent !important;
-        border-radius: 4px !important;
-        border: none !important;
-        overflow: hidden !important;
-        display: flex !important;
-        align-items: stretch !important;
-    }
-    
-    .stNumberInput input {
-        background-color: transparent !important;
-        text-align: center;
-        height: 28px !important;
-        font-size: 12px !important;
-        min-height: 28px !important;
-        width: 200px !important;
-        color: rgba(255, 255, 255, 0.9) !important;
-        border: none !important;
-        padding: 0 4px !important;
-        font-family: 'Roboto', sans-serif;
-    }
-    
-    /* Labels */
-    .plain-label {
-        font-size: 12px;
-        margin: 3px 0;
-        color: rgba(255, 255, 255, 0.9);
-        font-family: 'Roboto', sans-serif;
-    }
-    
-    /* Math symbols */
-    .math-symbol {
-        font-family: 'Roboto', sans-serif;
-        text-align: center;
-        margin: 10px 0;
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.9);
-    }
-    
-    /* Center matrix size text */
-    .stSelectSlider label {
-        text-align: center !important;
-        width: 100% !important;
-        display: block !important;
-        font-family: 'Roboto', sans-serif;
-        font-size: 12px;
-    }
-    
     /* Matrix separator */
     .matrix-separator {
         width: 4px;
-    }
-    
-    /* Slider labels */
-    .parameters-container [data-testid="stSlider"] > div:first-child {
-        text-align: center !important;
-        margin-bottom: 5px !important;
-        font-family: 'Roboto', sans-serif !important;
-        font-size: 14px !important;
-        color: rgba(255, 255, 255, 0.9) !important;
-    }
-    
-    /* Parameters sliders */
-    .parameters-container .stSlider {
-        width: 200px !important;
-        margin: 0 auto !important;
-    }
-    
-    .parameters-container [data-testid="stThumbValue"] {
-        background-color: transparent !important;
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-size: 12px !important;
-        padding: 2px 4px !important;
-        font-family: 'Roboto', sans-serif;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -190,14 +135,15 @@ st.markdown('<div class="parameters-container">', unsafe_allow_html=True)
 # Matrix size with custom label
 size = st.select_slider("Matrix Size", options=[2, 3, 4], value=2)
 
-# Tolerance with custom label
-tolerance = st.slider(
+# Tolerance with custom label - using logarithmic scale
+tolerance_exp = st.slider(
     "Tolerance (ε)",
-    min_value=float(1e-15),
-    max_value=float(1e-5),
-    value=float(1e-10),
-    format="%.0e"
+    min_value=-15,
+    max_value=-1,
+    value=-10,
+    step=1
 )
+tolerance = 10.0 ** tolerance_exp
 
 # Maximum iterations with custom label
 max_iterations = st.slider(
