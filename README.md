@@ -2,7 +2,7 @@
 
 The Gauss-Jordan method is a variation of Gauss elimination. The major difference is that when an unknown is eliminated in the Gauss-Jordan method, it is eliminated from all other equations rather than just the subsequent ones. In addition, all rows are normalized by dividing them by their pivot elements. Thus, the elimination step results in an identity matrix rather than a triangular matrix.
 
-This modern web application that solves systems of linear equations using the Gauss-Jordan elimination method. Built with Streamlit, this calculator provides an intuitive interface for solving linear systems of various sizes.
+This modern web application solves systems of linear equations using the Gauss-Jordan elimination method. Built with Streamlit, this calculator provides an intuitive interface for solving linear systems of various sizes.
 
 ## Method Explanation
 
