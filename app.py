@@ -70,7 +70,7 @@ st.markdown("""
     .matrix-input {
         position: relative;
         max-width: 600px;
-        margin: 40px 0px;
+        margin: 20px 0px;
         padding: 10px;
         background-color: transparent;
     }
@@ -86,7 +86,10 @@ st.markdown("""
     .matrix-container {
         position: relative;
         margin: 0 auto;
-        padding: 10px 0;
+        padding: 30px;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.05);
     }
     
     /* Matrix sliders */
@@ -118,7 +121,7 @@ st.markdown("""
     
     /* Matrix separator */
     .matrix-separator {
-        width: 4px;
+        width: 5px;
     }
     
     /* Matrix element container */
