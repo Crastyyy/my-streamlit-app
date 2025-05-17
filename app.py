@@ -444,17 +444,22 @@ def gauss_jordan_elimination(matrix, tolerance, max_iterations):
         if not np.allclose(left_side, np.eye(n), rtol=tolerance):
             return None, "System is inconsistent", None, None
         
-        return matrix, "Solution found", iteration_history, error_history
+        return matrix, "Solution", iteration_history, error_history
     except Exception as e:
         return None, f"Error: {str(e)}", None, None
 
 # Solve button and results display
-if st.button("Solve System", type="primary"):
+if st.button("Solve", type="primary"):
     matrix = np.array(matrix_input)
     result, message, iteration_history, error_history = gauss_jordan_elimination(matrix, tolerance, max_iterations)
     
     st.write("---")
-    st.markdown(f"<p style='text-align: center; font-size: 50px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; font-family: Roboto, sans-serif; font-weight: 300;'>{message}</p>", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div style='text-align: center;'>
+            <p style='font-size: 50px; color: rgba(255, 255, 255, 0.9); margin: 10px auto; font-weight: 500; font-family: Roboto, sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; font-weight: 500;'>{message}</p>
+            <div style='width: auto; padding: 10px; border: 5px solid rgba(255, 255, 255, 0.2); border-radius: 10px; background-color: rgba(255, 255, 255, 0.05);height: 2px; margin: 0 auto 10px auto;'></div>
+        </div>
+    """, unsafe_allow_html=True)
     
     if result is not None:
         st.markdown("<div style='text-align: center; font-family: Roboto, sans-serif; max-width: 800px; margin: 0 auto;'>", unsafe_allow_html=True)
@@ -520,8 +525,9 @@ if st.button("Solve System", type="primary"):
                 st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif; text-align: center;'>" + solution_type + "</div>", unsafe_allow_html=True)
                 
                 solution_html = "<div style='font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5; font-family: Roboto, sans-serif; text-align: center;'>"
+                variables = ['w', 'x', 'y', 'z']  # Reordered with w first
                 for i in range(size):
-                    solution_html += f"x<sub>{i+1}</sub> = {result[i,-1]:.4f}<br>"
+                    solution_html += f"{variables[i]} = {result[i,-1]:.4f}<br>"
                 solution_html += "</div>"
                 st.markdown(solution_html, unsafe_allow_html=True)
             else:
