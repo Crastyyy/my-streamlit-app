@@ -58,7 +58,7 @@ The application implements the Gauss-Jordan elimination method, which is a syste
 
 ## Sample Examples
 
-### Example 1: Unique Solution
+### Example 1
 Input:
 ```
 Matrix A:
@@ -76,7 +76,7 @@ w = 2.00
 x = 3.00
 ```
 
-### Example 2: No Solution
+### Example 2
 Input:
 ```
 Matrix A:
@@ -89,10 +89,10 @@ Vector b:
 ```
 Expected Output:
 ```
-✗ No Solution
+✗ No unique solution exists
 ```
 
-### Example 3: Infinite Solutions
+### Example 3
 Input:
 ```
 Matrix A:
@@ -105,7 +105,7 @@ Vector b:
 ```
 Expected Output:
 ```
-∞ Infinite Solutions
+✗ No unique solution exists
 ```
 
 ## Features
