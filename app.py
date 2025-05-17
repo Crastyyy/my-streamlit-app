@@ -263,8 +263,8 @@ for i in range(size):
             # Number input for precise value
             number_val = st.number_input(
                 "",
-                min_value=-10.0,
-                max_value=10.0,
+                min_value=-20.0,
+                max_value=20.0,
                 value=st.session_state[key],
                 step=0.01,
                 format="%.2f",
@@ -278,8 +278,8 @@ for i in range(size):
             # Slider for value
             slider_val = st.slider(
                 "",
-                min_value=-10.0,
-                max_value=10.0,
+                min_value=-20.0,
+                max_value=20.0,
                 value=st.session_state[key],
                 step=0.01,
                 key=f"slider_{key}",
@@ -309,8 +309,8 @@ for i in range(size):
         # Number input for precise value
         number_val = st.number_input(
             "",
-            min_value=-10.0,
-            max_value=10.0,
+            min_value=-20.0,
+            max_value=20.0,
             value=st.session_state[key],
             step=0.01,
             format="%.2f",
@@ -324,8 +324,8 @@ for i in range(size):
         # Slider for value
         slider_val = st.slider(
             "",
-            min_value=-10.0,
-            max_value=10.0,
+            min_value=-20.0,
+            max_value=20.0,
             value=st.session_state[key],
             step=0.01,
             key=f"slider_{key}",
@@ -454,20 +454,17 @@ if st.button("Solve System", type="primary"):
     result, message, iteration_history, error_history = gauss_jordan_elimination(matrix, tolerance, max_iterations)
     
     st.write("---")
-    st.markdown(f"<p class='math-symbol'>{message}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align: center; font-size: 50px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; font-family: Roboto, sans-serif; font-weight: 300;'>{message}</p>", unsafe_allow_html=True)
     
     if result is not None:
-        # Solution found message (large)
-        st.markdown("<div style='text-align: center; font-size: 70px; color: rgba(255, 255, 255, 0.9); margin: 40px 0; font-family: Roboto, sans-serif; font-weight: 300;'>Solution found</div>", unsafe_allow_html=True)
-        
         st.markdown("<div style='text-align: center; font-family: Roboto, sans-serif; max-width: 800px; margin: 0 auto;'>", unsafe_allow_html=True)
         
         # Original Matrix Section
         st.markdown("<div style='margin: 40px 0;'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-weight: 500; font-family: Roboto, sans-serif;'>Original Augmented Matrix</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-weight: 500; font-family: Roboto, sans-serif; text-align: center;'>Original Augmented Matrix</div>", unsafe_allow_html=True)
         
         # Format original matrix
-        original_matrix_html = "<div style='font-family: Roboto Mono, monospace; font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5;'>"
+        original_matrix_html = "<div style='font-family: Roboto Mono, monospace; font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5; text-align: center;'>"
         original_matrix_html += "⎡"
         for i in range(size):
             if i > 0:
@@ -490,10 +487,10 @@ if st.button("Solve System", type="primary"):
 
         # RREF Section
         st.markdown("<div style='margin: 40px 0;'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-weight: 500; font-family: Roboto, sans-serif;'>Reduced Row Echelon Form (RREF)</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-weight: 500; font-family: Roboto, sans-serif; text-align: center;'>Reduced Row Echelon Form (RREF)</div>", unsafe_allow_html=True)
         
         # Format RREF matrix
-        rref_matrix_html = "<div style='font-family: Roboto Mono, monospace; font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5;'>"
+        rref_matrix_html = "<div style='font-family: Roboto Mono, monospace; font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5; text-align: center;'>"
         rref_matrix_html += "⎡"
         for i in range(size):
             if i > 0:
@@ -520,17 +517,17 @@ if st.button("Solve System", type="primary"):
         if has_solution:
             if is_unique:
                 solution_type = "Unique Solution"
-                st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif;'>" + solution_type + "</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif; text-align: center;'>" + solution_type + "</div>", unsafe_allow_html=True)
                 
-                solution_html = "<div style='font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5; font-family: Roboto, sans-serif;'>"
+                solution_html = "<div style='font-size: 20px; color: rgba(255, 255, 255, 0.9); margin: 20px 0; line-height: 1.5; font-family: Roboto, sans-serif; text-align: center;'>"
                 for i in range(size):
                     solution_html += f"x<sub>{i+1}</sub> = {result[i,-1]:.4f}<br>"
                 solution_html += "</div>"
                 st.markdown(solution_html, unsafe_allow_html=True)
             else:
-                st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif;'>∞ Infinite Solutions</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif; text-align: center;'>∞ Infinite Solutions</div>", unsafe_allow_html=True)
         else:
-            st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif;'>✗ No Solution</div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 24px; color: rgba(255, 255, 255, 0.9); margin: 30px 0 20px; font-weight: 500; font-family: Roboto, sans-serif; text-align: center;'>✗ No Solution</div>", unsafe_allow_html=True)
             
         st.markdown("</div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
