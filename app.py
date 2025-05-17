@@ -16,7 +16,7 @@ st.markdown("""
     }
     
     .center-title {
-        text-align: side;
+        text-align: center;
         font-size: 70px !important;
         margin-bottom: 15px;
     }
@@ -196,8 +196,6 @@ st.markdown("""
 
 # Application title and description
 st.markdown('<h1 class="center-title">Gauss-Jordan Calculator</h1>', unsafe_allow_html=True)
-st.markdown('This is a tool that automatically solves systems of linear equations of the form Ax = b using the Gauss-Jordan elimination method. Simply choose your matrix size, set tolerance and maximum iterations if needed, and the calculator will transform your matrix into reduced row echelon form (RREF) to find the solution quickly and accurately, with no manual steps required.', unsafe_allow_html=True)
-
 # Input parameters section - all in one column
 st.markdown('<div class="parameters-container">', unsafe_allow_html=True)
 
