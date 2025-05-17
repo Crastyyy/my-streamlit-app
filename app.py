@@ -263,8 +263,8 @@ for i in range(size):
             # Number input for precise value
             number_val = st.number_input(
                 "",
-                min_value=-20.0,
-                max_value=20.0,
+                min_value=-50.0,
+                max_value=50.0,
                 value=st.session_state[key],
                 step=0.01,
                 format="%.2f",
@@ -278,8 +278,8 @@ for i in range(size):
             # Slider for value
             slider_val = st.slider(
                 "",
-                min_value=-20.0,
-                max_value=20.0,
+                min_value=-50.0,
+                max_value=50.0,
                 value=st.session_state[key],
                 step=0.01,
                 key=f"slider_{key}",
@@ -309,8 +309,8 @@ for i in range(size):
         # Number input for precise value
         number_val = st.number_input(
             "",
-            min_value=-20.0,
-            max_value=20.0,
+            min_value=-50.0,
+            max_value=50.0,
             value=st.session_state[key],
             step=0.01,
             format="%.2f",
@@ -324,8 +324,8 @@ for i in range(size):
         # Slider for value
         slider_val = st.slider(
             "",
-            min_value=-20.0,
-            max_value=20.0,
+            min_value=-50.0,
+            max_value=50.0,
             value=st.session_state[key],
             step=0.01,
             key=f"slider_{key}",
